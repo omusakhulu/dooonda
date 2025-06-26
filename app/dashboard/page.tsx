@@ -86,10 +86,10 @@ async function getDashboardData() {
     }
   })
 
-  const formattedOrders = recentOrders.map(order => ({
+  const formattedOrders = recentOrders.map((order: any) => ({
     id: order.id,
     customerName: order.user?.name || 'Unknown',
-    products: order.items?.map(item => item.product.name) || [],
+    products: order.items?.map((item: any) => item.product.name) || [],
     total: Number(order.total),
     status: order.status.toLowerCase() === 'delivered' ? 'delivered' : order.status.toLowerCase() as 'pending' | 'processing' | 'completed' | 'cancelled' | 'delivered',
     date: order.createdAt.toLocaleDateString()
