@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       where.storeId = storeId
     } else {
       // Get user's stores
-      const userStores = await prisma.store.findMany({
+      const userStores: { id: string }[] = await prisma.store.findMany({
         where: { userId: session.user.id },
         select: { id: true }
       })
