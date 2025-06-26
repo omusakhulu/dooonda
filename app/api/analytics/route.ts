@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const period = searchParams.get('period') || 'monthly'
 
     // Get user's stores
-    const stores = await prisma.store.findMany({
+    const stores: { id: string }[] = await prisma.store.findMany({
       where: { userId: session.user.id },
       select: { id: true }
     })
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total), 0)
+    const totalRevenue = orders.reduce((sum: number, order: { total: any }) => sum + Number(order.total), 0)
     const totalOrders = orders.length
     const totalCustomers = customers.length
     const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
