@@ -1,0 +1,96 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    
+    /* New gradient color variables */
+    --gradient-primary: linear-gradient(90deg, #6366F1 0%, #EC4899 100%);
+    --gradient-primary-reverse: linear-gradient(90deg, #EC4899 0%, #6366F1 100%);
+    --indigo: #6366F1;
+    --pink: #EC4899;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-slate-50 to-indigo-50/30 text-slate-800 font-['Poppins',sans-serif];
+  }
+}
+
+@layer components {
+  .gradient-button {
+    @apply bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:shadow-indigo-200/50;
+  }
+  
+  .gradient-button-reverse {
+    @apply bg-gradient-to-r from-[#EC4899] to-[#6366F1] text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:shadow-pink-200/50;
+  }
+  
+  .card-shadow {
+    @apply shadow-lg hover:shadow-xl transition-shadow duration-300 hover:shadow-indigo-100/50;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-text text-transparent;
+  }
+  
+  .border-gradient {
+    @apply border-2 border-transparent bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-border;
+  }
+  
+  .gradient-card {
+    @apply bg-gradient-to-br from-white to-indigo-50/50 border border-indigo-100/50 shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+  
+  .gradient-accent {
+    @apply bg-gradient-to-r from-indigo-500/10 to-pink-500/10 border border-indigo-200/30;
+  }
+}
+
+/* Custom scrollbar with gradient theme */
+@layer utilities {
+  .scrollbar-gradient::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-gradient::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  
+  .scrollbar-gradient::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #6366F1 0%, #EC4899 100%);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-gradient::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #5856eb 0%, #db2777 100%);
+  }
+}
