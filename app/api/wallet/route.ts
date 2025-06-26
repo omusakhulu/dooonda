@@ -36,7 +36,7 @@ export async function GET() {
 
     return NextResponse.json({
       balance: Number(wallet.balance),
-      transactions: transactions.map(t => ({
+      transactions: transactions.map((t: { amount: any }) => ({
         ...t,
         amount: Number(t.amount)
       }))

@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         },
         select: { phone: true }
       })
-      recipients = customers.map(c => c.phone).filter(Boolean) as string[]
+      recipients = customers.map(({ phone }: { phone: string | null }) => phone).filter(Boolean) as string[]
     } else if (recipientType === 'product' && productId) {
       // Get customers who bought specific product
       const customers = await prisma.customer.findMany({
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         },
         select: { phone: true }
       })
-      recipients = customers.map(c => c.phone).filter(Boolean) as string[]
+      recipients = customers.map(({ phone }: { phone: string | null }) => phone).filter(Boolean) as string[]
     }
 
     const message = await prisma.message.create({
