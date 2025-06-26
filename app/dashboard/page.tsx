@@ -86,10 +86,17 @@ async function getDashboardData() {
     }
   })
 
-  const formattedOrders = recentOrders.map((order: any) => ({
+  const formattedOrders = recentOrders.map((order: {
+    id: string
+    user?: { name: string | null }
+    items?: { product: { name: string } }[]
+    total: number | string
+    status: string
+    createdAt: Date
+  }) => ({
     id: order.id,
     customerName: order.user?.name || 'Unknown',
-    products: order.items?.map((item: any) => item.product.name) || [],
+    products: order.items?.map((item: { product: { name: string } }) => item.product.name) || [],
     total: Number(order.total),
     status: order.status.toLowerCase() === 'delivered' ? 'delivered' : order.status.toLowerCase() as 'pending' | 'processing' | 'completed' | 'cancelled' | 'delivered',
     date: order.createdAt.toLocaleDateString()
@@ -126,7 +133,7 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 4 }).map((_: unknown, i: number) => (
           <Card key={i} className="gradient-card">
             <CardContent className="p-6">
               <Skeleton className="h-4 w-24 mb-2" />
