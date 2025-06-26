@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     
     if (recipientType === 'all') {
       // Get all customers from user's stores
-      const customers: { phone: string | null }[] = await prisma.customer.findMany({
+      const customers = await prisma.customer.findMany({
         where: {
           store: { userId: session.user.id }
         },
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       recipients = customers.map(c => c.phone).filter(Boolean) as string[]
     } else if (recipientType === 'product' && productId) {
       // Get customers who bought specific product
-      const customers: { phone: string | null }[] = await prisma.customer.findMany({
+      const customers = await prisma.customer.findMany({
         where: {
           orders: {
             some: {
