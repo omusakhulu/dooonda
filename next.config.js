@@ -6,6 +6,7 @@ const nextConfig = {
   output: process.env.NEXT_OUTPUT_MODE,
   experimental: {
     outputFileTracingRoot: path.join(__dirname, '../'),
+    serverComponentsExternalPackages: ['@prisma/client'], // Add this line
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -14,6 +15,13 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   images: { unoptimized: true },
+  // Add webpack configuration to handle Prisma
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@prisma/client');
+    }
+    return config;
+  }
 };
 
 module.exports = nextConfig;
