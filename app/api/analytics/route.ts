@@ -1,14 +1,16 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import type { Session } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { subYears, subMonths } from 'date-fns'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  let session: Session | null = null
   try {
-    const session = await getServerSession(authOptions)
+    session = await getServerSession(authOptions)
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -16,61 +18,63 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || 'monthly'
 
-    // Get user's stores
-    const stores: { id: string }[] = await prisma.store.findMany({
+    // Fetch stores first to avoid using it before declaration
+    const stores = await prisma.store.findMany({
       where: { userId: session.user.id },
       select: { id: true }
     })
 
     const storeIds = stores.map(s => s.id)
 
-    // Calculate date range based on period
-    let startDate: Date
-    if (period === 'yearly') {
-      startDate = new Date(new Date().getFullYear() - 2, 0, 1) // Last 3 years
-    } else {
-      startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1) // Last 12 months
-    }
+    // Determine the date range based on the requested period
+    const startDate = period === 'yearly' ? subYears(new Date(), 2) : subMonths(new Date(), 11)
 
-    // Get analytics data
-    const analytics = await prisma.analytics.findMany({
-      where: {
-        storeId: { in: storeIds },
-        date: { gte: startDate }
-      },
-      orderBy: { date: 'asc' }
-    })
+    // Fetch analytics, orders and customers in parallel
+    const [analytics, orders, customers] = await Promise.all([
+      prisma.analytics.findMany({
+        where: {
+          storeId: { in: storeIds },
+          date: { gte: startDate }
+        },
+        orderBy: { date: 'asc' }
+      }),
+      prisma.order.findMany({
+        where: {
+          storeId: { in: storeIds },
+          createdAt: { gte: startDate }
+        },
+        select: { total: true }
+      }),
+      prisma.customer.findMany({
+        where: {
+          storeId: { in: storeIds },
+          createdAt: { gte: startDate }
+        },
+        select: { id: true }
+      })
+    ])
 
-    // Get summary data
-    const orders = await prisma.order.findMany({
-      where: {
-        storeId: { in: storeIds },
-        createdAt: { gte: startDate }
-      }
-    })
-
-    const customers = await prisma.customer.findMany({
-      where: {
-        storeId: { in: storeIds },
-        createdAt: { gte: startDate }
-      }
-    })
-
-    const totalRevenue = orders.reduce((sum: number, order: { total: any }) => sum + Number(order.total), 0)
+    const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total), 0)
     const totalOrders = orders.length
     const totalCustomers = customers.length
-    const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
 
-    const summary = {
-      totalRevenue,
-      totalOrders,
-      totalCustomers,
-      avgOrderValue: Math.round(avgOrderValue)
-    }
-
-    return NextResponse.json({ analytics, summary })
+    return NextResponse.json({
+      analytics,
+      summary: {
+        totalRevenue,
+        totalOrders,
+        totalCustomers,
+        avgOrderValue: totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
+      }
+    })
   } catch (error) {
-    console.error('Error fetching analytics:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error in /api/analytics:', {
+      error: error instanceof Error ? error.message : error,
+      userId: session?.user.id
+    })
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }
