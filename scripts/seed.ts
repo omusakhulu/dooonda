@@ -100,7 +100,7 @@ async function main() {
   console.log('🏪 Created stores:', stores.length)
 
   // Create products for each store
-  const products = []
+  const products: any[] = []
   
   // Tech Hub Nairobi products
   const techProducts = await Promise.all([
@@ -348,7 +348,14 @@ async function main() {
   console.log('🛒 Created orders:', orders.length)
 
   // Create analytics data for the last 12 months
-  const analyticsData = []
+  const analyticsData: Array<{
+    date: Date;
+    views: number;
+    orders: number;
+    sales: number;
+    customers: number;
+    storeId: string;
+  }> = []
   const now = new Date()
   
   for (let i = 0; i < 12; i++) {
