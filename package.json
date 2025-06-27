@@ -5,10 +5,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "prisma generate && prisma migrate deploy && npm run build && pm2 restart dooonda"
   },
   "prisma": {
-    "seed": "tsx --require dotenv/config scripts/seed.ts"
+    "seed": "tsx --require dotenv/config scripts/seed.ts",
+    "schema": "custom/path/schema.prisma"
   },
   "devDependencies": {
     "@next/swc-wasm-nodejs": "13.5.1",

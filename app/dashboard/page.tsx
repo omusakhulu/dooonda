@@ -86,14 +86,7 @@ async function getDashboardData() {
     }
   })
 
-  const formattedOrders = recentOrders.map((order: {
-    id: string
-    user?: { name: string | null }
-    items?: { product: { name: string } }[]
-    total: number | string
-    status: string
-    createdAt: Date
-  }) => ({
+  const formattedOrders = recentOrders.map(order => ({
     id: order.id,
     customerName: order.user?.name || 'Unknown',
     products: order.items?.map((item: { product: { name: string } }) => item.product.name) || [],
